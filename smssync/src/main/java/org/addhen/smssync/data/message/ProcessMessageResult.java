@@ -20,6 +20,7 @@ package org.addhen.smssync.data.message;
 import com.google.gson.Gson;
 
 import org.addhen.smssync.R;
+import org.addhen.smssync.data.PrefsFactory;
 import org.addhen.smssync.data.cache.FileManager;
 import org.addhen.smssync.data.entity.Message;
 import org.addhen.smssync.data.entity.MessageResult;
@@ -75,16 +76,18 @@ public class ProcessMessageResult {
 
     private MessageDataSource mMessageDataSource;
 
+    private PrefsFactory mPrefsFactory;
+
     @Inject
     public ProcessMessageResult(Context context, AppHttpClient appHttpClient,
             FileManager fileManager, WebServiceDataSource webServiceDataSource,
-            MessageDataSource messageDataSource) {
+            MessageDataSource messageDataSource, PrefsFactory prefsFactory) {
         mContext = context;
         mAppHttpClient = appHttpClient;
         mFileManager = fileManager;
         mWebServiceDataSource = webServiceDataSource;
         mMessageDataSource = messageDataSource;
-        mMessageDataSource = messageDataSource;
+        mPrefsFactory = prefsFactory;
     }
 
     public void processMessageResult() {
@@ -94,7 +97,7 @@ public class ProcessMessageResult {
             if ((response != null) && (response.isSuccess()) && (response.hasUUIDs())) {
                 final List<MessageResult> messageResults = new ArrayList<>();
                 for (String uuid : response.getUuids()) {
-                    Message message = mMessageDataSource.fetchPendingByUuid(uuid);
+                    Message message = mMessageDataSource.fetchByUuid(uuid);
                     if (message != null) {
                         MessageResult messageResult = new MessageResult();
                         messageResult.setMessageUUID(message.getMessageUuid());
@@ -131,6 +134,7 @@ public class ProcessMessageResult {
                 mFileManager.append(e.getLocalizedMessage());
             }
             newEndPointURL = newEndPointURL.concat(urlSecretEncoded);
+            newEndPointURL = newEndPointURL.concat("&device_id=" + mPrefsFactory.uniqueId().get());
         }
 
         try {
@@ -161,6 +165,7 @@ public class ProcessMessageResult {
         MessagesUUIDSResponse response = null;
         if (null != messages && !messages.getQueuedMessages().isEmpty()) {
             String newEndPointURL = syncUrl.getUrl().concat(TASK_SENT_URL_PARAM);
+            newEndPointURL = newEndPointURL.concat("&device_id=" + mPrefsFactory.uniqueId().get());
             mAppHttpClient.setUrl(newEndPointURL);
 
             try {
@@ -222,6 +227,7 @@ public class ProcessMessageResult {
             newEndPointURL = newEndPointURL.concat(urlSecretEncoded);
         }
 
+        newEndPointURL = newEndPointURL.concat("&device_id=" + mPrefsFactory.uniqueId().get());
         mAppHttpClient.setUrl(newEndPointURL);
         try {
             mAppHttpClient.setMethod(BaseHttpClient.HttpMethod.GET);

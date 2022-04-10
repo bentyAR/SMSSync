@@ -360,7 +360,7 @@ public class PostMessage extends ProcessMessage {
                 }
                 uriBuilder.append(urlSecretEncoded);
             }
-
+            uriBuilder.append("&device_id=" + mPrefsFactory.uniqueId().get());
             messageHttpClient.setUrl(uriBuilder.toString());
             SmssyncResponse smssyncResponses = null;
             Gson gson = null;

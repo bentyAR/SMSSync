@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.Toast;
 
 /**
@@ -39,8 +40,7 @@ public class SmsDeliveredReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int result = getResultCode();
-        MessageModel message = (MessageModel) intent.getParcelableExtra(
-                ProcessSms.DELIVERED_SMS_BUNDLE);
+        MessageModel message = (MessageModel) intent.getBundleExtra(ProcessSms.DELIVERED_SMS_BUNDLE).getSerializable(ProcessSms.DELIVERED_SMS_BUNDLE);
         FileManager fileManager = App.getAppComponent().fileManager();
         String resultMessage = "";
         switch (result) {
@@ -69,7 +69,9 @@ public class SmsDeliveredReceiver extends BroadcastReceiver {
 
             // Update this in a service to guarantee it will run
             Intent updateService = new Intent(context, UpdateMessageService.class);
-            updateService.putExtra(ServiceConstants.UPDATE_MESSAGE, message);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ServiceConstants.UPDATE_MESSAGE, message);
+            updateService.putExtra(ServiceConstants.UPDATE_MESSAGE, bundle);
             context.startService(updateService);
         }
     }

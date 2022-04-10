@@ -30,9 +30,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
+import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -78,7 +82,7 @@ public class ProcessSms {
      * @param message            The message of the SMS
      * @param sendDeliveryReport Whether to send delivery report or not
      */
-    public void sendSms(MessageModel message, boolean sendDeliveryReport) {
+        public void sendSms(MessageModel message, boolean sendDeliveryReport) {
         LogUtil.logInfo(CLASS_TAG, "sendSms(): Sends SMS to a number: sendTo: %s message: %s",
                 message.getMessageFrom(),
                 message.getMessageBody());
@@ -90,14 +94,20 @@ public class ProcessSms {
         for (int i = 0; i < parts.size(); i++) {
 
             Intent sentMessageIntent = new Intent(SENT);
-            sentMessageIntent.putExtra(SENT_SMS_BUNDLE, message);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(SENT_SMS_BUNDLE, message);
+            sentMessageIntent.putExtra(SENT_SMS_BUNDLE, bundle);
+
+
 
             PendingIntent sentIntent = PendingIntent
                     .getBroadcast(mContext, (int) System.currentTimeMillis(), sentMessageIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent delivered = new Intent(DELIVERED);
-            delivered.putExtra(DELIVERED_SMS_BUNDLE, message);
+            bundle = new Bundle();
+            bundle.putSerializable(DELIVERED_SMS_BUNDLE, message);
+            delivered.putExtra(DELIVERED_SMS_BUNDLE, bundle);
 
             PendingIntent deliveryIntent = PendingIntent
                     .getBroadcast(mContext, (int) System.currentTimeMillis(), delivered,

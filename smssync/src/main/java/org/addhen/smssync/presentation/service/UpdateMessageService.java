@@ -71,7 +71,7 @@ public class UpdateMessageService extends BaseWakefulIntentService implements Up
     @Override
     protected void executeTask(Intent intent) {
         mServiceStarted = true;
-        MessageModel messageModel = (MessageModel) intent.getParcelableExtra(ServiceConstants.UPDATE_MESSAGE);
+        MessageModel messageModel = (MessageModel) intent.getBundleExtra(ServiceConstants.UPDATE_MESSAGE).getSerializable(ServiceConstants.UPDATE_MESSAGE);
         mUpdateMessagePresenter.updateMessage(messageModel);
 
     }

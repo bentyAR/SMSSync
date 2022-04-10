@@ -22,12 +22,13 @@ import com.addhen.android.raiburari.presentation.model.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Henry Addo
  */
-public class MessageModel extends Model implements Parcelable {
+public class MessageModel extends Model implements Serializable {
 
     private String messageBody;
 
@@ -188,44 +189,44 @@ public class MessageModel extends Model implements Parcelable {
         status = (Status) in.readValue(Status.class.getClassLoader());
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (_id == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeLong(_id);
-        }
-        dest.writeString(messageBody);
-        dest.writeString(messageFrom);
-        dest.writeLong(messageDate != null ? messageDate.getTime() : -1L);
-        dest.writeString(messageUuid);
-        dest.writeValue(messageType);
-        dest.writeInt(sentResultCode);
-        dest.writeString(sentResultMessage);
-        dest.writeInt(deliveryResultCode);
-        dest.writeString(deliveryResultMessage);
-        dest.writeLong(deliveredMessageDate != null ? deliveredMessageDate.getTime() : -1L);
-        dest.writeInt(retries);
-        dest.writeValue(status);
-    }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<MessageModel> CREATOR
-            = new Parcelable.Creator<MessageModel>() {
-        @Override
-        public MessageModel createFromParcel(Parcel in) {
-            return new MessageModel(in);
-        }
-
-        @Override
-        public MessageModel[] newArray(int size) {
-            return new MessageModel[size];
-        }
-    };
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        if (_id == null) {
+//            dest.writeByte((byte) (0x00));
+//        } else {
+//            dest.writeByte((byte) (0x01));
+//            dest.writeLong(_id);
+//        }
+//        dest.writeString(messageBody);
+//        dest.writeString(messageFrom);
+//        dest.writeLong(messageDate != null ? messageDate.getTime() : -1L);
+//        dest.writeString(messageUuid);
+//        dest.writeValue(messageType);
+//        dest.writeInt(sentResultCode);
+//        dest.writeString(sentResultMessage);
+//        dest.writeInt(deliveryResultCode);
+//        dest.writeString(deliveryResultMessage);
+//        dest.writeLong(deliveredMessageDate != null ? deliveredMessageDate.getTime() : -1L);
+//        dest.writeInt(retries);
+//        dest.writeValue(status);
+//    }
+//
+//    @SuppressWarnings("unused")
+//    public static final Parcelable.Creator<MessageModel> CREATOR
+//            = new Parcelable.Creator<MessageModel>() {
+//        @Override
+//        public MessageModel createFromParcel(Parcel in) {
+//            return new MessageModel(in);
+//        }
+//
+//        @Override
+//        public MessageModel[] newArray(int size) {
+//            return new MessageModel[size];
+//        }
+//    };
 }

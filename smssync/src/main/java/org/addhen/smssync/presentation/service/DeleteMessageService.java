@@ -70,7 +70,7 @@ public class DeleteMessageService extends BaseWakefulIntentService implements De
     @Override
     protected void executeTask(Intent intent) {
         mServiceStarted = true;
-        String uuid = intent.getStringExtra(ServiceConstants.DELETE_MESSAGE);
+        String uuid = intent.getBundleExtra(ServiceConstants.DELETE_MESSAGE).getSerializable(ServiceConstants.DELETE_MESSAGE).toString();
         mDeleteMessagePresenter.deleteMessage(uuid);
 
     }

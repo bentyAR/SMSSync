@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.widget.Toast;
 
@@ -44,7 +45,7 @@ public class SmsSentReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        messageModel = (MessageModel) intent.getParcelableExtra(ProcessSms.SENT_SMS_BUNDLE);
+        messageModel = (MessageModel) intent.getBundleExtra(ProcessSms.SENT_SMS_BUNDLE).getSerializable(ProcessSms.SENT_SMS_BUNDLE);
         final int result = getResultCode();
         boolean sentSuccess = false;
         log("smsSentReceiver onReceive result: " + result);
@@ -95,7 +96,9 @@ public class SmsSentReceiver extends BroadcastReceiver {
                 messageModel.setStatus(MessageModel.Status.SENT);
                 // Update this in a service to guarantee it will run
                 Intent updateService = new Intent(context, UpdateMessageService.class);
-                updateService.putExtra(ServiceConstants.UPDATE_MESSAGE, messageModel);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(ServiceConstants.UPDATE_MESSAGE, messageModel);
+                updateService.putExtra(ServiceConstants.UPDATE_MESSAGE, bundle);
                 context.startService(updateService);
             } else {
 
@@ -105,8 +108,9 @@ public class SmsSentReceiver extends BroadcastReceiver {
                         Logger.log(SmsSentReceiver.class.getSimpleName(),
                                 "Delete failed messages " + messageModel);
                         Intent deleteService = new Intent(context, DeleteMessageService.class);
-                        deleteService.putExtra(ServiceConstants.DELETE_MESSAGE,
-                                messageModel.getMessageUuid());
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(ServiceConstants.DELETE_MESSAGE, messageModel.getMessageUuid());
+                        deleteService.putExtra(ServiceConstants.DELETE_MESSAGE, bundle);
                         context.startService(deleteService);
                     } else {
                         int retries = messageModel.getRetries() + 1;
@@ -116,7 +120,9 @@ public class SmsSentReceiver extends BroadcastReceiver {
                                 "update message retries " + messageModel);
                         // Update this in a service to guarantee it will run
                         Intent updateService = new Intent(context, UpdateMessageService.class);
-                        updateService.putExtra(ServiceConstants.UPDATE_MESSAGE, messageModel);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(ServiceConstants.UPDATE_MESSAGE, messageModel);
+                        updateService.putExtra(ServiceConstants.UPDATE_MESSAGE, bundle);
                         context.startService(updateService);
                     }
                 }
